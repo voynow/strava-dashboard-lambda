@@ -1,10 +1,17 @@
 
+import base64
 import boto3
 import json
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+from io import BytesIO
+
 
 bucket_name = "strava-raw"
 s3 = boto3.resource('s3')
+html_filename = 'index.html'
 
 
 def get_activities():
@@ -63,3 +70,52 @@ def fill_missing_dates(df):
     joined_df = dates_df.set_index('date').join(df.set_index('date'))
     
     return joined_df
+
+
+def data_preprocessing(df):
+    """
+    Facilitates S3 operations, preprocessing, and transformation for analytics
+    """
+    activities = get_activities()
+    df = activities_to_df(activities)
+
+    run_df = df[df['type'] == 'Run']
+    run_df = fill_missing_dates(run_df)
+
+    run_df['distance'] = run_df['distance'].apply(lambda x: 0 if np.isnan(x) else x)
+    run_df['distance_ma'] = run_df['distance'].rolling(30).sum()
+
+    return run_df
+
+
+def create_fig(df):
+    """
+    create plot for monthly mileage
+    """
+    fig = plt.figure(figsize=(10, 6))
+    plt.plot(
+        df.index, 
+        df['distance_ma'], 
+        c='#5589C1', 
+        linewidth=3
+    )
+
+    plt.title('Monthly Mileage')
+    plt.xlabel('Date')
+    plt.ylabel('Mileage')
+
+    return fig
+
+
+def update_dashboard(fig):
+    """
+    Generate html from matplotlib plot
+    """
+    tmpfile = BytesIO()
+    fig.savefig(tmpfile, format='png')
+    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+
+    html = f'<img src=\'data:image/png;base64,{encoded}\'>'
+
+    with open(html_filename,'w') as f:
+        f.write(html)
