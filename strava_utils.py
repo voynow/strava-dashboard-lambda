@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 
 
+plt.style.use('ggplot')
 bucket_name = "strava-raw"
 s3 = boto3.resource('s3')
 html_filename = 'index.html'
@@ -72,7 +73,7 @@ def fill_missing_dates(df):
     return joined_df
 
 
-def data_preprocessing(df):
+def data_preprocessing():
     """
     Facilitates S3 operations, preprocessing, and transformation for analytics
     """
