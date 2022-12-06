@@ -5,14 +5,16 @@ import json
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 
 from io import BytesIO
 
 
-plt.style.use('ggplot')
-bucket_name = "strava-raw"
-s3 = boto3.resource('s3')
+raw_bucket = "strava-raw"
+dashbaord_bucket = "strava-dashboard"
 html_filename = 'index.html'
+s3_recource = boto3.resource('s3')
+s3_client = boto3.client('s3')
 
 
 def get_activities():
@@ -20,7 +22,7 @@ def get_activities():
     Get activities JSON from raw bucket
     """
     activities = []
-    for obj in s3.Bucket(bucket_name).objects.all():
+    for obj in s3_recource.Bucket(raw_bucket).objects.all():
         body_bytes = obj.get()['Body'].read()
         activities.append(json.loads(body_bytes))
     return activities
@@ -118,5 +120,9 @@ def update_dashboard(fig):
 
     html = f'<img src=\'data:image/png;base64,{encoded}\'>'
 
-    with open(html_filename,'w') as f:
-        f.write(html)
+    return s3_client.put_object(
+        Bucket=dashbaord_bucket,
+        Key=html_filename,
+        Body=html,
+        ContentType="text/html",
+    )
