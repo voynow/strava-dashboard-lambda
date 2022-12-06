@@ -5,6 +5,8 @@ def lambda_handler(event, context):
 
     df = strava_utils.data_preprocessing()
     fig = strava_utils.create_fig(df)
-    strava_utils.update_dashboard(fig)
+    resp = strava_utils.update_dashboard(fig)
 
-    return 1
+    return resp
+
+print(lambda_handler({}, {}))
