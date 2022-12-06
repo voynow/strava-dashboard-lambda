@@ -120,11 +120,9 @@ def update_dashboard(fig):
 
     html = f'<img src=\'data:image/png;base64,{encoded}\'>'
 
-    with open(html_filename,'w') as f:
-        f.write(html)
-
-    return s3_client.upload_file(
-        html_filename, 
-        dashbaord_bucket, 
-        html_filename,
-        ExtraArgs={'ContentType': 'text/html'})
+    return s3_client.put_object(
+        Bucket=dashbaord_bucket,
+        Key=html_filename,
+        Body=html,
+        ContentType="text/html",
+    )
