@@ -1,21 +1,11 @@
-
-import base64
 import boto3
 import datetime
 import json
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-
-from io import BytesIO
-
 
 raw_bucket = "strava-raw"
-dashbaord_bucket = "strava-dashboard"
-html_filename = 'index.html'
-s3_recource = boto3.resource('s3')
-s3_client = boto3.client('s3')
+s3 = boto3.resource('s3')
 
 
 def get_activities():
@@ -23,7 +13,7 @@ def get_activities():
     Get activities JSON from raw bucket
     """
     activities = []
-    for obj in s3_recource.Bucket(raw_bucket).objects.all():
+    for obj in s3.Bucket(raw_bucket).objects.all():
         body_bytes = obj.get()['Body'].read()
         activities.append(json.loads(body_bytes))
     return activities
@@ -75,7 +65,7 @@ def fill_missing_dates(df):
     return joined_df
 
 
-def data_preprocessing():
+def preprocessing():
     """
     Facilitates S3 operations, preprocessing, and transformation for analytics
     """
@@ -89,40 +79,3 @@ def data_preprocessing():
     run_df['distance_ma'] = run_df['distance'].rolling(30).sum()
 
     return run_df
-
-
-def create_fig(df):
-    """
-    create plot for monthly mileage
-    """
-    fig = plt.figure(figsize=(10, 6))
-    plt.plot(
-        df.index, 
-        df['distance_ma'], 
-        c='#5589C1', 
-        linewidth=3
-    )
-
-    plt.title('Monthly Mileage')
-    plt.xlabel('Date')
-    plt.ylabel('Mileage')
-
-    return fig
-
-
-def update_dashboard(fig):
-    """
-    Generate html from matplotlib plot
-    """
-    tmpfile = BytesIO()
-    fig.savefig(tmpfile, format='png')
-    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-
-    html = f'<img src=\'data:image/png;base64,{encoded}\'>'
-
-    return s3_client.put_object(
-        Bucket=dashbaord_bucket,
-        Key=html_filename,
-        Body=html,
-        ContentType="text/html",
-    )
