@@ -8,5 +8,3 @@ def lambda_handler(event, context):
     resp = strava_utils.update_dashboard(fig)
 
     return resp
-
-print(lambda_handler({}, {}))

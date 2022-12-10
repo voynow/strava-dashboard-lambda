@@ -1,6 +1,7 @@
 
 import base64
 import boto3
+import datetime
 import json
 import pandas as pd
 import numpy as np
@@ -67,8 +68,7 @@ def fill_missing_dates(df):
     """
     if 'date' not in df.columns:
         raise ValueError("Missing required column: 'date'")
-    
-    date_range = pd.date_range(df['date'].min(), df['date'].max())
+    date_range = pd.date_range(df['date'].min(), datetime.date.today())
     dates_df = pd.DataFrame(date_range, columns=['date'])
     joined_df = dates_df.set_index('date').join(df.set_index('date'))
     
