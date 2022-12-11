@@ -76,6 +76,6 @@ def preprocessing():
     run_df = fill_missing_dates(run_df)
 
     run_df['distance'] = run_df['distance'].apply(lambda x: 0 if np.isnan(x) else x)
-    run_df['distance_ma'] = run_df['distance'].rolling(30).sum()
+    run_df['distance_ma'] = run_df['distance'].rolling(30).sum().rolling(2).mean()
 
     return run_df
