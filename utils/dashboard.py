@@ -12,14 +12,14 @@ html_filename = 'index.html'
 s3 = boto3.client('s3')
 
 
-def create_fig(df):
+def create_monthly_fig(df):
     """
     create plot for monthly mileage
     """
-    fig = plt.figure(figsize=(10, 6))
+    fig = plt.figure(figsize=(12, 4))
     plt.plot(
         df.index, 
-        df['distance_ma'], 
+        df['distance_monthly_ma'], 
         c='#5589C1', 
         linewidth=3
     )
@@ -31,17 +31,37 @@ def create_fig(df):
     return fig
 
 
+def create_2week_fig(df):
+    """
+    create plot for monthly mileage
+    """
+    fig = plt.figure(figsize=(12, 4))
+    plt.plot(
+        df.index, 
+        df['distance_2week_ma'], 
+        c='#705DAF', 
+        linewidth=3
+    )
+
+    plt.title('2 Week Mileage')
+    plt.xlabel('Date')
+    plt.ylabel('Mileage')
+
+    return fig
+
+
 def update_dashboard(df):
     """
     Generate html from matplotlib plot
     """
-    fig = create_fig(df)
-    
-    tmpfile = BytesIO()
-    fig.savefig(tmpfile, format='png')
-    encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+    figures = [create_monthly_fig(df), create_2week_fig(df)]
+    tmpfiles = [BytesIO() for _ in range(len(figures))]
 
-    html = f'<img src=\'data:image/png;base64,{encoded}\'>'
+    html = ""
+    for fig, tmpfile in zip(figures, tmpfiles):
+        fig.savefig(tmpfile, format='png')
+        encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
+        html += f'<center><img src=\'data:image/png;base64,{encoded}\'></ceneter>'
 
     return s3.put_object(
         Bucket=dashbaord_bucket,

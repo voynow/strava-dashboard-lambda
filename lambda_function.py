@@ -7,3 +7,5 @@ def lambda_handler(event, context):
     resp = dashboard.update_dashboard(df)
 
     return resp
+
+lambda_handler({}, {})
