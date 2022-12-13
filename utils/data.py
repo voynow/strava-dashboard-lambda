@@ -1,8 +1,9 @@
 import boto3
 import datetime
 import json
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pathlib
 
 raw_bucket = "strava-raw"
 s3 = boto3.resource('s3')
@@ -14,8 +15,9 @@ def get_activities():
     """
     activities = []
     for obj in s3.Bucket(raw_bucket).objects.all():
-        body_bytes = obj.get()['Body'].read()
-        activities.append(json.loads(body_bytes))
+        if pathlib.Path(obj.key).stem.isnumeric():
+            body_bytes = obj.get()['Body'].read()
+            activities.append(json.loads(body_bytes))
     return activities
 
 
