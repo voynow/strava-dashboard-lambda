@@ -31,19 +31,19 @@ def create_monthly_fig(df):
     return fig
 
 
-def create_2week_fig(df):
+def create_week_fig(df):
     """
     create plot for monthly mileage
     """
     fig = plt.figure(figsize=(11, 4))
     plt.plot(
         df.index, 
-        df['distance_2week_ma'], 
-        c='#705DAF', 
+        df['distance_week_ma'], 
+        c='#2bb58e', 
         linewidth=3
     )
 
-    plt.title('2 Week Mileage')
+    plt.title('Weekly Mileage')
     plt.xlabel('Date')
     plt.ylabel('Mileage')
 
@@ -54,7 +54,7 @@ def update_dashboard(df):
     """
     Generate html from matplotlib plot
     """
-    figures = [create_monthly_fig(df), create_2week_fig(df)]
+    figures = [create_monthly_fig(df), create_week_fig(df)]
     tmpfiles = [BytesIO() for _ in range(len(figures))]
 
     html = ""
