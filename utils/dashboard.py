@@ -35,7 +35,7 @@ def create_week_fig(df):
     """
     create plot for monthly mileage
     """
-    fig = plt.figure(figsize=(11, 4))
+    fig = plt.figure(figsize=(11, 3.5))
     plt.plot(
         df.index, 
         df['distance_week_ma'], 
