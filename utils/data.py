@@ -3,7 +3,6 @@ import datetime
 import json
 import numpy as np
 import pandas as pd
-import pathlib
 
 raw_bucket = "strava-raw"
 s3 = boto3.resource('s3')

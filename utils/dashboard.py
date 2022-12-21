@@ -63,7 +63,7 @@ def update_dashboard(df):
         encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
         html += f'<center><img src=\'data:image/png;base64,{encoded}\'></ceneter>'
 
-    return s3.put_object(
+    s3.put_object(
         Bucket=dashbaord_bucket,
         Key=html_filename,
         Body=html,
