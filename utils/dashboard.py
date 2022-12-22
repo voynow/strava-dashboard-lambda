@@ -16,7 +16,7 @@ def create_monthly_fig(df):
     """
     create plot for monthly mileage
     """
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(11, 3))
     plt.plot(
         df.index, 
         df['distance_monthly_ma'], 
@@ -35,7 +35,7 @@ def create_week_fig(df):
     """
     create plot for monthly mileage
     """
-    fig = plt.figure(figsize=(10, 3))
+    fig = plt.figure(figsize=(11, 3))
     plt.plot(
         df.index, 
         df['distance_week_ma'], 
