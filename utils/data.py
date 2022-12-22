@@ -3,22 +3,18 @@ import datetime
 import json
 import numpy as np
 import pandas as pd
-import pathlib
 
 raw_bucket = "strava-raw"
 s3 = boto3.resource('s3')
 
 
-def get_activities():
+def get_activities(bucket, table):
     """
     Get activities JSON from raw bucket
     """
-    activities = []
-    for obj in s3.Bucket(raw_bucket).objects.all():
-        if pathlib.Path(obj.key).stem.isnumeric():
-            body_bytes = obj.get()['Body'].read()
-            activities.append(json.loads(body_bytes))
-    return activities
+    obj = s3.Object(bucket, table)
+    table = json.loads(obj.get()['Body'].read())
+    return [data for _, data in table.items()]
 
 
 def clean(df):
@@ -71,7 +67,7 @@ def preprocessing():
     """
     Facilitates S3 operations, preprocessing, and transformation for analytics
     """
-    activities = get_activities()
+    activities = get_activities(raw_bucket, "activities.json")
     df = activities_to_df(activities)
 
     run_df = df[df['type'] == 'Run']
