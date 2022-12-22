@@ -10,41 +10,21 @@ from io import BytesIO
 dashbaord_bucket = "strava-dashboard"
 html_filename = 'index.html'
 s3 = boto3.client('s3')
+figsize = (12, 2.5)
 
 
-def create_monthly_fig(df):
+def create_fig(df, col, color, title):
+    """ Create mileage figure
     """
-    create plot for monthly mileage
-    """
-    fig = plt.figure(figsize=(11, 3))
+    fig = plt.figure(figsize=figsize)
     plt.plot(
         df.index, 
-        df['distance_monthly_ma'], 
-        c='#5589C1', 
+        df[col], 
+        c=color, 
         linewidth=3
     )
 
-    plt.title('Monthly Mileage')
-    plt.xlabel('Date')
-    plt.ylabel('Mileage')
-
-    return fig
-
-
-def create_week_fig(df):
-    """
-    create plot for monthly mileage
-    """
-    fig = plt.figure(figsize=(11, 3))
-    plt.plot(
-        df.index, 
-        df['distance_week_ma'], 
-        c='#2bb58e', 
-        linewidth=3
-    )
-
-    plt.title('Weekly Mileage')
-    plt.xlabel('Date')
+    plt.title(title)
     plt.ylabel('Mileage')
 
     return fig
@@ -54,7 +34,10 @@ def update_dashboard(df):
     """
     Generate html from matplotlib plot
     """
-    figures = [create_monthly_fig(df), create_week_fig(df)]
+    figures = [
+        create_fig(df, 'distance_monthly_ma', '#FBC15E', 'Monthly Mileage'),
+        create_fig(df, 'distance_week_ma', '#348ABD', 'Weekly Mileage'),
+    ]
     tmpfiles = [BytesIO() for _ in range(len(figures))]
 
     html = ""
