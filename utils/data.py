@@ -78,3 +78,10 @@ def preprocessing():
     run_df['distance_week_ma'] = run_df['distance'].rolling(7).sum().rolling(2).mean()
 
     return run_df
+
+
+def load_table(bucket, table):
+    """ Get json table from s3
+    """
+    obj = s3.Object(bucket, table)
+    return json.loads(obj.get()['Body'].read())
