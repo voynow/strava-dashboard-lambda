@@ -85,3 +85,27 @@ def load_table(bucket, table):
     """
     obj = s3.Object(bucket, table)
     return json.loads(obj.get()['Body'].read())
+
+    
+def get_philly_heatmap():
+    """ Get lat, lng data from activities (of type=run) in philadelphia
+    """
+    latlon_data = {"xs": [], "ys": []}
+
+    for _, obj in load_table(raw_bucket, "streams.json").items():
+        if 'latlng' in obj:
+            y, x = np.transpose(obj['latlng']['data'])
+
+            # only append data within philadelphia boundary
+            if np.mean(x) > -75.4 and np.mean(x) < -75 and np.mean(y) > 39.6:
+                latlon_data['xs'].append(x)
+                latlon_data['ys'].append(-1 * y)
+
+    # convert to hist
+    hist, _, _ = np.histogram2d(
+        np.hstack(latlon_data['ys']),
+        np.hstack(latlon_data['xs']),
+        bins=125)
+
+    # add .01 offset to avoid log(0)
+    return np.log(hist + .01)
