@@ -4,6 +4,7 @@ import boto3
 from io import BytesIO
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
+import utils.html as html
 
 
 dashbaord_bucket = "strava-dashboard"
@@ -24,7 +25,7 @@ def create_fig(df, heatmap):
 
     # heatmap configuration
     axs['Left'].set_title("Philly Running Heatmap")
-    axs['Left'].imshow(heatmap, cmap="Spectral_r")
+    axs['Left'].imshow(heatmap, cmap="hot")
     axs['Left'].tick_params(left=False, bottom=False)
     axs['Left'].axis('off')
 
@@ -34,7 +35,7 @@ def create_fig(df, heatmap):
     axs['TopRight'].plot(
         df.index, 
         df['distance_monthly_ma'], 
-        c='#FBC15E',
+        c='#BD3446',
         linewidth=3
     )
 
@@ -60,11 +61,11 @@ def update_dashboard(df, heatmap):
 
     fig.savefig(tmpfile, format='png')
     encoded = base64.b64encode(tmpfile.getvalue()).decode('utf-8')
-    html = f'<center><img src=\'data:image/png;base64,{encoded}\'></ceneter>'
+    html_string = html.get_code(encoded)
 
     s3.put_object(
         Bucket=dashbaord_bucket,
         Key=html_filename,
-        Body=html,
+        Body=html_string,
         ContentType="text/html",
     )
