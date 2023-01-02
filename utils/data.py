@@ -107,5 +107,8 @@ def get_philly_heatmap():
         np.hstack(latlon_data['xs']),
         bins=125)
 
+    # pad array with zeros for better visualization
+    hist = np.pad(hist, 2)
+
     # add 1 offset to avoid log(0)
     return np.log(hist + 1)
