@@ -24,12 +24,16 @@ def get_code(encoded):
         </head>
 
         <body>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 75%;">
-                <h1 style="color: #434343;">Strava Analytics</h1>
-                <p style="font-size: 16px; color: #434343; font-weight: bold;">Don't know what strava is? <a href="https://www.strava.com/athletes/98390356">Check out my profile</a></p>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75%;">
+                <h1 style="color: #434343; text-align: center;">Strava Analytics</h1>
+                <p style="font-size: 16px; color: #434343; font-weight: bold; text-align: center;">Don't know what strava is? <a href="https://www.strava.com/athletes/98390356">Check out my profile</a></p>
                 <img src='data:image/png;base64,{encoded}' alt="matplotlib fig derived from strava data" style="margin: 20px auto; width: 100%;">
-                <div style="width: 75%; margin: auto;">
-                    <p style="font-size: 20px; color: #434343;">TODO: Add project description with other info/links to code and account</p>
+                <div style="width: 75%; margin: 0 auto; font-size: 20px; color: #434343;">
+                    <p style="font-size: 22px; font-weight: bold; margin-bottom: 0;">This dashboard is updated daily at 11:30pm EST</p>
+                    <ul style="margin: 0; padding-top: 5px;">
+                        <li>The <a href="https://github.com/voynow/strava-ingestion-lambda">ingestion lambda</a> is responsible for querying the strava API and storing the data in S3</li>
+                        <li>The <a href="https://github.com/voynow/strava-dashboard-lambda">dashboard lambda</a> queries the S3 data and updates the dashboard accordingly</li>
+                    </ul>
                 </div>
             </div>
         </body>
