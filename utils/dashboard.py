@@ -1,10 +1,9 @@
 
 import base64
 import boto3
+from io import BytesIO
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
-
-from io import BytesIO
 
 
 dashbaord_bucket = "strava-dashboard"
@@ -14,19 +13,22 @@ figsize = (14, 6)
 
 
 def create_fig(df, heatmap):
-
+    """ matplotlib subplot for dashboard visualizations
+    """
+    # figure setup
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     axs = fig.subplot_mosaic(
         [['Left', 'TopRight'],['Left', 'BottomRight']],
-        gridspec_kw={'width_ratios':[3, 7]}
-    )
+        gridspec_kw={'width_ratios':[3, 7]})
     fig.tight_layout(pad=3.0)
 
+    # heatmap configuration
     axs['Left'].set_title("Philly Running Heatmap")
     axs['Left'].imshow(heatmap, cmap="Spectral_r")
     axs['Left'].tick_params(left=False, bottom=False)
     axs['Left'].axis('off')
 
+    # Monthly mileage configuration
     axs['TopRight'].set_title('Monthly Mileage')
     axs['TopRight'].set_ylabel('Mileage')
     axs['TopRight'].plot(
@@ -36,6 +38,7 @@ def create_fig(df, heatmap):
         linewidth=3
     )
 
+    # Weekly mileage configuration
     axs['BottomRight'].set_title('Weekly Mileage')
     axs['BottomRight'].set_ylabel('Mileage')
     axs['BottomRight'].plot(
@@ -52,7 +55,6 @@ def update_dashboard(df, heatmap):
     """
     Generate html from matplotlib plot
     """
-
     tmpfile = BytesIO()
     fig = create_fig(df, heatmap)
 
