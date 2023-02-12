@@ -20,7 +20,7 @@ def create_fig(df, heatmap):
     fig = plt.figure(constrained_layout=True, figsize=figsize)
     axs = fig.subplot_mosaic(
         [['Left', 'TopRight'],['Left', 'BottomRight']],
-        gridspec_kw={'width_ratios':[3, 7]})
+        gridspec_kw={'width_ratios':[1, 2]})
     fig.tight_layout(pad=3.0)
 
     # heatmap configuration
