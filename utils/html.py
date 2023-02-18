@@ -1,6 +1,6 @@
 
 def get_code(encoded):
-
+    print("html.get_code")
     return f"""
     <!DOCTYPE html>
     <html>

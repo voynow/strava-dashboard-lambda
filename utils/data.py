@@ -12,6 +12,7 @@ def get_activities(bucket, table):
     """
     Get activities JSON from raw bucket
     """
+    print("data.get_activities")
     obj = s3.Object(bucket, table)
     table = json.loads(obj.get()['Body'].read())
     return [data for _, data in table.items()]
@@ -19,6 +20,7 @@ def get_activities(bucket, table):
 
 def clean(df):
     
+    print("data.clean")
     # update date col as pandas datetime
     df['date'] = pd.to_datetime(df['start_date'].apply(lambda x: x.split("T")[0]))
     df.drop(['start_date'], axis=1, inplace=True)
@@ -33,6 +35,7 @@ def activities_to_df(activities):
     """
     Create pandas dataframe from list of activities
     """
+    print("data.activities_to_df")
     keys = []
     [[keys.append(item) for item in activity] for activity in activities]
     unique_keys = set(keys)
@@ -54,6 +57,7 @@ def fill_missing_dates(df):
     """
     Add rows for dates where no activity exists
     """
+    print("data.fill_missing_dates")
     if 'date' not in df.columns:
         raise ValueError("Missing required column: 'date'")
     date_range = pd.date_range(df['date'].min(), datetime.date.today())
@@ -66,6 +70,7 @@ def fill_missing_dates(df):
 def get_data():
     """ Prepare data for analytics
     """
+    print("data.get_data")
     activities = get_activities(raw_bucket, "activities.json")
     df = activities_to_df(activities)
 
@@ -77,6 +82,7 @@ def get_data():
 def calc_moving_average():
     """ Apply transformation according to date, calculate moving averages
     """
+    print("data.calc_moving_average")
     
     df = fill_missing_dates(get_data())
     df = df.groupby('date')[['total_elevation_gain', 'distance']].sum()
@@ -91,6 +97,7 @@ def calc_moving_average():
 def load_table(bucket, table):
     """ Get json table from s3
     """
+    print("data.load_table")
     obj = s3.Object(bucket, table)
     return json.loads(obj.get()['Body'].read())
 
@@ -98,6 +105,7 @@ def load_table(bucket, table):
 def get_philly_heatmap():
     """ Get lat, lng data from activities (of type=run) in philadelphia
     """
+    print("data.get_philly_heatmap")
     latlon_data = {"xs": [], "ys": []}
 
     for _, obj in load_table(raw_bucket, "streams.json").items():
