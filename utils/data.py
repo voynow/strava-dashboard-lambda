@@ -63,21 +63,29 @@ def fill_missing_dates(df):
     return joined_df
 
 
-def preprocessing():
-    """
-    Facilitates S3 operations, preprocessing, and transformation for analytics
+def get_data():
+    """ Prepare data for analytics
     """
     activities = get_activities(raw_bucket, "activities.json")
     df = activities_to_df(activities)
 
     run_df = df[df['type'] == 'Run']
-    run_df = fill_missing_dates(run_df)
-
-    run_df['distance'] = run_df['distance'].apply(lambda x: 0 if np.isnan(x) else x)
-    run_df['distance_monthly_ma'] = run_df['distance'].rolling(30).sum().rolling(2).mean()
-    run_df['distance_week_ma'] = run_df['distance'].rolling(7).sum().rolling(2).mean()
 
     return run_df
+
+
+def calc_moving_average():
+    """ Apply transformation according to date, calculate moving averages
+    """
+    
+    df = fill_missing_dates(get_data())
+    df = df.groupby('date')[['total_elevation_gain', 'distance']].sum()
+
+    df['distance'] = df['distance'].apply(lambda x: 0 if np.isnan(x) else x)
+    df['distance_monthly_ma'] = df['distance'].rolling(30).sum().rolling(2).mean()
+    df['distance_week_ma'] = df['distance'].rolling(7).sum().rolling(2).mean()
+
+    return df
 
 
 def load_table(bucket, table):
